@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: docuquery-gateway
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
+  cloud:
+    gateway:
+      routes:
+        - id: upload_route
+          uri: ${DOCUQUERY_API_URL:http://localhost:8000}
+          predicates:
+            - Path=/doc/upload
+          filters:
+            - RewritePath=/doc/upload, /upload
+            - name: RateLimit
+              args:
+                capacity: 10
+                refillRate: 5
+                keyType: API_KEY
+
+        - id: ask_route
+          uri: ${DOCUQUERY_API_URL:http://localhost:8000}
+          predicates:
+            - Path=/doc/ask
+          filters:
+            - RewritePath=/doc/ask, /ask
+            - name: RateLimit
+              args:
+                capacity: 30
+                refillRate: 10
+                keyType: API_KEY
+
+        - id: status_route
+          uri: ${DOCUQUERY_API_URL:http://localhost:8000}
+          predicates:
+            - Path=/doc/upload/status/**
+          filters:
+            - RewritePath=/doc/upload/status/(?<segment>.*), /upload/status/${segment}
+
+      default-filters:
+        - AddRequestHeader=X-Gateway-Source, spring-gateway
+
+rate-limit:
+  enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
