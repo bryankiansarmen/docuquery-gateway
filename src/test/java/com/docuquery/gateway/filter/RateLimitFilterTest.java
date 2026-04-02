@@ -28,12 +28,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for {@link RateLimitFilter}.
- *
- * <p>All Redis interactions are mocked so these tests run without an
- * infrastructure dependency and complete in milliseconds.
- */
 @ExtendWith(MockitoExtension.class)
 class RateLimitFilterTest {
 
@@ -56,10 +50,6 @@ class RateLimitFilterTest {
         config.setCapacity(10);
         config.setRefillRate(5);
     }
-
-    // -------------------------------------------------------------------------
-    // Missing / blank API key  →  401 Unauthorized
-    // -------------------------------------------------------------------------
 
     @Nested
     @DisplayName("When X-API-Key header is absent or blank")
@@ -94,10 +84,6 @@ class RateLimitFilterTest {
             verify(chain, never()).filter(any());
         }
     }
-
-    // -------------------------------------------------------------------------
-    // First request for a key  →  TTL is set, request passes through
-    // -------------------------------------------------------------------------
 
     @Nested
     @DisplayName("When this is the first request for an API key")
@@ -141,10 +127,6 @@ class RateLimitFilterTest {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Subsequent request within limit  →  no TTL, passes through with headers
-    // -------------------------------------------------------------------------
-
     @Nested
     @DisplayName("When the request count is within the configured capacity")
     class WithinRateLimit {
@@ -152,7 +134,7 @@ class RateLimitFilterTest {
         @Test
         @DisplayName("does NOT reset TTL for subsequent requests")
         void doesNotResetTtlForSubsequentRequests() {
-            stubRedisIncrement(5L);   // 5th request — count > 1
+            stubRedisIncrement(5L); // 5th request — count > 1
             when(chain.filter(any())).thenReturn(Mono.empty());
 
             MockServerWebExchange exchange = exchangeWithApiKey("test-key", "/doc/upload");
@@ -168,7 +150,7 @@ class RateLimitFilterTest {
         @Test
         @DisplayName("includes accurate X-RateLimit-Remaining in response headers")
         void includesAccurateRemainingHeader() {
-            stubRedisIncrement(7L);  // 7 used, 3 remaining
+            stubRedisIncrement(7L); // 7 used, 3 remaining
             when(chain.filter(any())).thenReturn(Mono.empty());
 
             MockServerWebExchange exchange = exchangeWithApiKey("test-key", "/doc/upload");
@@ -183,10 +165,6 @@ class RateLimitFilterTest {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Requests exceeding capacity  →  429 Too Many Requests
-    // -------------------------------------------------------------------------
-
     @Nested
     @DisplayName("When the request count exceeds the configured capacity")
     class RateLimitExceeded {
@@ -194,7 +172,7 @@ class RateLimitFilterTest {
         @Test
         @DisplayName("returns 429 Too Many Requests")
         void returnsTooManyRequestsStatus() {
-            stubRedisIncrement(11L);  // capacity is 10
+            stubRedisIncrement(11L); // capacity is 10
 
             MockServerWebExchange exchange = exchangeWithApiKey("test-key", "/doc/ask");
             GatewayFilter filter = rateLimitFilter.apply(config);
@@ -239,10 +217,6 @@ class RateLimitFilterTest {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Config defaults
-    // -------------------------------------------------------------------------
-
     @Nested
     @DisplayName("Config defaults")
     class ConfigDefaults {
@@ -270,10 +244,6 @@ class RateLimitFilterTest {
             assertThat(c.getKeyType()).isEqualTo("USER_ID");
         }
     }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
 
     private MockServerWebExchange exchangeWithApiKey(String apiKey, String path) {
         MockServerHttpRequest request = MockServerHttpRequest

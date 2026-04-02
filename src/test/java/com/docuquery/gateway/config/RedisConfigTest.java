@@ -8,12 +8,6 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-/**
- * Unit tests for {@link RedisConfig}.
- *
- * <p>Verifies that the bean factory method produces a correctly configured
- * {@link ReactiveRedisTemplate} without requiring a live Redis connection.
- */
 class RedisConfigTest {
 
     private final RedisConfig redisConfig = new RedisConfig();
@@ -23,8 +17,7 @@ class RedisConfigTest {
     void beanIsNonNull() {
         ReactiveRedisConnectionFactory mockFactory = mock(ReactiveRedisConnectionFactory.class);
 
-        ReactiveRedisTemplate<String, String> template =
-                redisConfig.reactiveRedisTemplate(mockFactory);
+        ReactiveRedisTemplate<String, String> template = redisConfig.reactiveRedisTemplate(mockFactory);
 
         assertThat(template).isNotNull();
     }
@@ -34,11 +27,8 @@ class RedisConfigTest {
     void beanUsesStringSerializationContext() {
         ReactiveRedisConnectionFactory mockFactory = mock(ReactiveRedisConnectionFactory.class);
 
-        ReactiveRedisTemplate<String, String> template =
-                redisConfig.reactiveRedisTemplate(mockFactory);
+        ReactiveRedisTemplate<String, String> template = redisConfig.reactiveRedisTemplate(mockFactory);
 
-        // The serialization context is set at construction time; if it were wrong the
-        // template would not be assignable to ReactiveRedisTemplate<String, String>.
         assertThat(template).isInstanceOf(ReactiveRedisTemplate.class);
     }
 }
