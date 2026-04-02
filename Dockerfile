@@ -5,7 +5,7 @@ RUN mvn -B -e -q -Dspring-boot.repackage.skip=true dependency:go-offline
 COPY /src/ /sources/src/
 RUN mvn clean verify -B -e -q
 
-FROM openjdk:25-jdk-slim AS final
+FROM eclipse-temurin:25-jdk-alpine AS final
 WORKDIR /application
 COPY --from=build /sources/target/*.jar /application/app.jar
 EXPOSE 8080
