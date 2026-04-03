@@ -1,0 +1,6 @@
+redis:
+  host: redis-master
+  port: 6379
+
+docuquery:
+  apiUrl: http://docuquery-api:8000

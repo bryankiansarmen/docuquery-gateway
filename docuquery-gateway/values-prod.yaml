@@ -1,0 +1,29 @@
+env: prod
+
+redis:
+  host: redis-master
+  port: 6379
+
+docuquery:
+  apiUrl: http://docuquery-api:8000
+
+image:
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 3
+
+app:
+  failureThreshold: 5
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  successThreshold: 1
+  timeoutSeconds: 3
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 768Mi
+  limits:
+    cpu: 1000m
+    memory: 1536Mi

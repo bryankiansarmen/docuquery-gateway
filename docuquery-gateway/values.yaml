@@ -1,0 +1,34 @@
+env: dev
+
+redis:
+  host: redis-master
+  port: 6379
+
+docuquery:
+  apiUrl: http://docuquery-api:8000
+
+app:
+  port: 8080
+  targetPort: 8080
+  healthPath: /actuator/health
+  failureThreshold: 3
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 1
+
+image:
+  repository: docuquery-gateway
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecret: regcred
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
