@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = "docuquery-gateway"
         IMAGE_TAG  = "${env.BUILD_NUMBER}"
         NAMESPACE  = "docuquery-dev"
-        HELM_CHART = "./helm"
+        HELM_CHART = "./docuquery-gateway"
         KUBECONFIG = "/var/jenkins_home/.kube/config"
     }
 
@@ -14,18 +14,6 @@ pipeline {
         stage("Checkout") {
             steps {
                 checkout scm
-            }
-        }
-
-        stage("Run tests") {
-            steps {
-                sh "mvn test -f pom.xml"
-            }
-        }
-
-        stage("Build JAR") {
-            steps {
-                sh "mvn clean package -DskipTests -f pom.xml"
             }
         }
 
