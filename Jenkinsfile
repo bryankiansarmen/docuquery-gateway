@@ -41,8 +41,8 @@ pipeline {
                             -f ${HELM_CHART}/values.yaml \
                             -f ${HELM_CHART}/values-dev.yaml \
                             --namespace ${NAMESPACE} \
-                            --set secrets.appApiKey="${APP_API_KEY}" \
-                            --set secrets.redisPassword="${REDIS_PASSWORD}" \
+                            --set secrets.appApiKey="\${APP_API_KEY}" \
+                            --set secrets.redisPassword="\${REDIS_PASSWORD}" \
                             --set image.tag="${IMAGE_TAG}" \
                             --wait \
                             --timeout 5m
